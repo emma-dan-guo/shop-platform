@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  password    String
+  salt        String
+  createdTime DateTime @default(now()) @map("created_time")
+
+  @@map("tbl_user")
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("tbl_category")
+}
+
+model Province {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  @@map("tbl_province")
+}
+
+// 关于销售流水的表
+model SalesOrder {
+  id            Int      @id @default(autoincrement())
+  userId        Int // which user to place the order
+  shopId        Int // 店铺ID, refer to tbl_sales_shop_info.id
+  salesAmount   Float // 销售金额
+  salesCategory Int // refer to category.id
+  productName   String // the name
+  provinceId    Int // 地区
+  createTime    DateTime @default(now()) @map("created_time") // 流水产生时间
+
+  @@map("tbl_sales_order")
+}
+
+model SalesShopInfo {
+  id                Int    @id @default(autoincrement())
+  shopName          String
+  category          Int // refer to category.id
+  locationLongitude Float
+  locationLatitude  Float
+
+  @@map("tbl_sales_shop_info")
+}
